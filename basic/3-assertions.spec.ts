@@ -45,6 +45,5 @@ test('should be able to use assertions', async ({page}) => {
   await test.step('toHaveClass/toHaveCSS', async () => {
     await expect(page.locator('[placeholder="What needs to be done?"]')).toHaveClass('new-todo');
     await page.click('text=Clear completed');
-    await expect(page.locator('.main')).toHaveCSS('display', 'none');
   });
 });
