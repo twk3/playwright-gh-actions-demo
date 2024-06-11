@@ -53,5 +53,5 @@ test("element selectors @tagA", async ({ page }) => {
   await page.click("text=Completed >> visible=true");
 
   // XPath selector
-  await page.click("xpath=//html/body/section/section/label");
+  await page.click("xpath=//html/body/section/section/label[1]");
 });

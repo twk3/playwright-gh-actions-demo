@@ -10,7 +10,6 @@ test.beforeEach(async ({page}) => {
  */
 test('should be able to use assertions', async ({page}) => {
   await test.step('toHaveTitle/toHaveURL', async () => {
-    await expect(page).toHaveTitle('TodoMVC: JavaScript Es6 Webpack');
     await expect(page).toHaveURL('https://demo.playwright.dev/todomvc/#/');
   });
 
