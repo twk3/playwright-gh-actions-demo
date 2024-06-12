@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test.skip("basic test @basic", async ({ page }) => {
+test("basic test @basic", async ({ page }) => {
   await page.goto("https://demo.playwright.dev/todomvc/#/");
 
   // Use locators to represent a selector and re-use them
