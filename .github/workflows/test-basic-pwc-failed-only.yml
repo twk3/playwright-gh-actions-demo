@@ -3,17 +3,61 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [main]
-  push:
-    branches: [main]
 jobs:
+  previousFailedFirst:
+    strategy:
+      fail-fast: false
+      matrix:
+        # run 3 copies of the job in parallel
+        shard: [1, 2, 3]
+    name: "Playwright Tests - pwc - failed"
+    continue-on-error: true
+    timeout-minutes: 60
+    runs-on: ubuntu-22.04
+    container: mcr.microsoft.com/playwright:latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      # https://github.com/actions/runner-images/issues/6775
+      - run: |
+          echo "$GITHUB_WORKSPACE"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - uses: dawidd6/action-download-artifact@v6
+        with: 
+          workflow_conclusion: falure
+          pr: ${{github.event.pull_request.number}}
+          name: failure-report
+          path: failures
+          if_no_artifact_found: fail
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18.x"
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install chrome
+          npx playwright install
+
+      - name: Run Failed Tests
+        continue-on-error: false
+        working-directory: ./basic
+        env:
+          CURRENTS_API_URL: https://cy-staging.currents.dev
+          CURRENTS_PROJECT_ID: kTvs8s
+          CURRENTS_RECORD_KEY: ${{ secrets.STAGING_CURRENTS_RECORD_KEY }}
+          CURRENTS_CI_BUILD_ID: last-failed-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }} $(cat failures/summary.json | jq -r '.failed[]' |  tr '\n' ' ')
+
   basicFailedTests:
     strategy:
       fail-fast: false
       matrix:
         # run 3 copies of the job in parallel
         shard: [1, 2, 3]
-
-    name: "Playwright Tests - pwc - failed"
+    name: "Playwright Tests - pwc - full"
     timeout-minutes: 60
     runs-on: ubuntu-22.04
     container: mcr.microsoft.com/playwright:latest
@@ -82,6 +126,6 @@ jobs:
     - name: Upload JSON report
       uses: actions/upload-artifact@v4
       with:
-        name: json-report--attempt-${{ github.run_attempt }}
+        name: failure-report
         path: summary.json
         retention-days: 14
