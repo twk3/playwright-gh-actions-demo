@@ -35,12 +35,12 @@ jobs:
         run: |
           head failures/summary.json && echo "hasFailures=true\n" >> $GITHUB_OUTPUT 
       - uses: actions/setup-node@v4
-        if: ${{ success() && steps.download-failures.output.hasFailures == 'true' }}
+        if: ${{ success() && steps.download-failures.outputs.hasFailures == 'true' }}
         with:
           node-version: "18.x"
 
       - name: Install dependencies
-        if: ${{ failure() && steps.download-failures.output.hasFailures == 'true' }}
+        if: ${{ failure() && steps.download-failures.outputs.hasFailures == 'true' }}
         run: |
           npm ci
           apt update
@@ -49,7 +49,7 @@ jobs:
           npx playwright install
 
       - name: Run Failed Tests
-        if: ${{ success() && steps.download-failures.output.hasFailures == 'true' }}
+        if: ${{ success() && steps.download-failures.outputs.hasFailures == 'true' }}
         continue-on-error: false
         working-directory: ./basic
         env:
@@ -62,7 +62,7 @@ jobs:
 
       - name: Upload reports as artifacts.
         uses: actions/upload-artifact@v4
-        if: ${{ failure() && steps.download-failures.output.hasFailures == 'true' }}
+        if: ${{ failure() && steps.download-failures.outputs.hasFailures == 'true' }}
         with:
           name: blobReports-${{ matrix.shard }}
           path: blob-report
