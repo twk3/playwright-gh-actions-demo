@@ -54,6 +54,7 @@ jobs:
           CURRENTS_RECORD_KEY: ${{ secrets.STAGING_CURRENTS_RECORD_KEY }}
           CURRENTS_CI_BUILD_ID: failed-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
+          cat ../failures/summary.json | npx jqn -r '.failed[]' |  tr '\n' ' '
           npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }} --reporter blob $(cat ../failures/summary.json | npx jqn -r '.failed[]' |  tr '\n' ' ')
 
       - name: Run All Test
