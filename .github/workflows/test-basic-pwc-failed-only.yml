@@ -58,9 +58,10 @@ jobs:
           CURRENTS_CI_BUILD_ID: failed-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }} --reporter blob $(cat ../failures/summary.json | jq -r '.failed[]' | tr '\n' ' ')
+
       - name: Upload reports as artifacts.
         uses: actions/upload-artifact@v4
-        if: '{{ failure() && steps.download-failures.output.hasFailures == 'true' }}'
+        if: ${{ failure() && steps.download-failures.output.hasFailures == 'true' }}
         with:
           name: blobReports-${{ matrix.shard }}
           path: blob-report
