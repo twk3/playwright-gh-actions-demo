@@ -34,11 +34,11 @@ jobs:
 
       - uses: dawidd6/action-download-artifact@v6
         id: download-failures
-        # continue-on-error: true
+        continue-on-error: true
         with:
           workflow: test-basic-pwc-failed-only.yml
           workflow_conclusion: falure
-          pr: ${{github.event.pull_request.number}}
+          branch: ${{github.ref_name}}
           name: failure-report
           path: failures
           if_no_artifact_found: fail
