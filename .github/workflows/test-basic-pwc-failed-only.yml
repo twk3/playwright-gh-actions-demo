@@ -65,7 +65,7 @@ jobs:
           retention-days: 1
   fullRun:
     if: 'success()'
-    needs: fullRun
+    needs: previousFailedFirst
     strategy:
       fail-fast: false
       matrix:
