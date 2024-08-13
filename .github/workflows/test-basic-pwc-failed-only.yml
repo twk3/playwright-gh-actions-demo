@@ -29,7 +29,6 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm install jq.node --save-dev
           apt update
           apt install -y jq
           npx playwright install chrome
@@ -56,9 +55,42 @@ jobs:
           CURRENTS_RECORD_KEY: ${{ secrets.STAGING_CURRENTS_RECORD_KEY }}
           CURRENTS_CI_BUILD_ID: failed-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
-          cat ../failures/summary.json | jq -r '.failed[]' | xargs -I % sh -c "echo % | cut -d ':' -f1" | tr '\n' ' '
-          npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }} --reporter blob $(cat ../failures/summary.json | jq -r '.failed[]' | xargs -I % sh -c "echo % | cut -d ':' -f1" | tr '\n' ' ')
+          npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }} --reporter blob $(cat ../failures/summary.json | jq -r '.failed[]' | tr '\n' ' ')
+      - name: Upload reports as artifacts.
+        uses: actions/upload-artifact@v4
+        if: failed()
+        with:
+          name: blobReports-${{ matrix.shard }}
+          path: blob-report
+          retention-days: 1
+  fullRun:
+    if: 'success()'
+    strategy:
+      fail-fast: false
+      matrix:
+        # run 3 copies of the job in parallel
+        shard: [1, 2, 3]
+    name: "Playwright Tests - pwc - full"
+    timeout-minutes: 60
+    runs-on: ubuntu-22.04
+    container: mcr.microsoft.com/playwright:latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      # https://github.com/actions/runner-images/issues/6775
+      - run: |
+          echo "$GITHUB_WORKSPACE"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18.x"
 
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install chrome
+          npx playwright install
       - name: Run All Test
         if: ${{ success() || steps.download-failures.conclusion == 'failure' }}
         continue-on-error: false
