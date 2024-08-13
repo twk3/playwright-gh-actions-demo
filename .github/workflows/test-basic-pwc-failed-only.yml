@@ -33,6 +33,7 @@ jobs:
           npx playwright install
 
       - uses: dawidd6/action-download-artifact@v6
+        id: download-failures
         # continue-on-error: true
         with:
           workflow: test-basic-pwc-failed-only.yml
@@ -50,19 +51,19 @@ jobs:
           CURRENTS_API_URL: https://cy-staging.currents.dev
           CURRENTS_PROJECT_ID: kTvs8s
           CURRENTS_RECORD_KEY: ${{ secrets.STAGING_CURRENTS_RECORD_KEY }}
-          CURRENTS_CI_BUILD_ID: last-failed-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
+          CURRENTS_CI_BUILD_ID: failed-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
-          npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }} $(cat failures/summary.json | jq -r '.failed[]' |  tr '\n' ' ')
+          npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }} --reporter blob $(cat failures/summary.json | jq -r '.failed[]' |  tr '\n' ' ')
 
       - name: Run All Test
-        if: ${{ success() }}
+        if: ${{ success() || steps.download-failures.conclusion == 'failure' }}
         continue-on-error: false
         working-directory: ./basic
         env:
           CURRENTS_API_URL: https://cy-staging.currents.dev
           CURRENTS_PROJECT_ID: kTvs8s
           CURRENTS_RECORD_KEY: ${{ secrets.STAGING_CURRENTS_RECORD_KEY }}
-          CURRENTS_CI_BUILD_ID: reporter-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
+          CURRENTS_CI_BUILD_ID: all-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }} --reporter blob
 
@@ -74,8 +75,8 @@ jobs:
           path: blob-report
           retention-days: 1
   recordFailedTests:
-    if: 'failed()'
-    needs: basicFailedTests
+    if: 'failure()'
+    needs: previousFailedFirst
     runs-on: ubuntu-22.04
     container: mcr.microsoft.com/playwright:latest
     steps:
