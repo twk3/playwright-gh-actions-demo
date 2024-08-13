@@ -54,18 +54,31 @@ jobs:
         if: always()
         with:
           name: blobReports-${{ matrix.shard }}
-          path: |
-            blob-report
+          path: blob-report
+          retention-days: 1
   findFailedTests:
     if: '!cancelled()'
     needs: basicFailedTests
     runs-on: ubuntu-22.04
     container: mcr.microsoft.com/playwright:latest
     steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+    - name: Install dependencies
+      run: npm ci
     - name: Download Blobs
       uses: actions/download-artifact@v4
       with:
-        path: blob-reports
+        path: all-blob-reports
         pattern: blobReports-*
         merge-multiple: true
-    - run: ls -R blob-reports
+    - name: Merge into JSON Report
+      run: npx playwright merge-reports --reporter json ./all-blob-reports
+    - name: Upload JSON report
+      uses: actions/upload-artifact@v4
+      with:
+        name: json-report--attempt-${{ github.run_attempt }}
+        path: playwright-report
+        retention-days: 14
