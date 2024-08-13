@@ -56,3 +56,15 @@ jobs:
           name: blobReports-${{ matrix.shard }}
           path: |
             blob-report
+  findFailedTests:
+    needs: basicFailedTests
+    runs-on: ubuntu-22.04
+    container: mcr.microsoft.com/playwright:latest
+    steps:
+    - name: Download Blobs
+      uses: actions/download-artifact@v4
+      with:
+        path: blob-reports
+        pattern: blobReports-*
+        merge-multiple: true
+    - run: ls -R blob-reports
