@@ -39,7 +39,7 @@ jobs:
         continue-on-error: true
         with:
           workflow: test-basic-pwc-failed-only.yml
-          workflow_conclusion: failure
+          workflow_conclusion: failurep
           branch: ${{github.head_ref}}
           name: failure-report
           path: failures
