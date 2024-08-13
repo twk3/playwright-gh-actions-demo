@@ -67,7 +67,10 @@ jobs:
       with:
         node-version: 18
     - name: Install dependencies
-      run: npm ci
+      run: | 
+        npm ci
+        # Add a summary reporter
+        npm install @butchmayhew/playwright-json-summary-reporter --save-dev
     - name: Download Blobs
       uses: actions/download-artifact@v4
       with:
@@ -75,10 +78,10 @@ jobs:
         pattern: blobReports-*
         merge-multiple: true
     - name: Merge into JSON Report
-      run: npx playwright merge-reports --reporter json ./all-blob-reports
+      run: npx playwright merge-reports --reporter @butchmayhew/playwright-json-summary-reporter ./all-blob-reports
     - name: Upload JSON report
       uses: actions/upload-artifact@v4
       with:
         name: json-report--attempt-${{ github.run_attempt }}
-        path: playwright-report
+        path: summary.json
         retention-days: 14
