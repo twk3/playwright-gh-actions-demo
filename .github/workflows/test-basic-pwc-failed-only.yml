@@ -57,6 +57,7 @@ jobs:
           path: |
             blob-report
   findFailedTests:
+    if: '!cancelled()'
     needs: basicFailedTests
     runs-on: ubuntu-22.04
     container: mcr.microsoft.com/playwright:latest
