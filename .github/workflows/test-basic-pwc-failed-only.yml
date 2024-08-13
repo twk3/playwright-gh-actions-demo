@@ -65,6 +65,7 @@ jobs:
           retention-days: 1
   fullRun:
     if: 'success()'
+    needs: fullRun
     strategy:
       fail-fast: false
       matrix:
@@ -112,7 +113,7 @@ jobs:
           retention-days: 1
   recordFailedTests:
     if: 'failure()'
-    needs: previousFailedFirst
+    needs: [previousFailedFirst, fullRun]
     runs-on: ubuntu-22.04
     container: mcr.microsoft.com/playwright:latest
     steps:
