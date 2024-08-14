@@ -26,9 +26,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       # https://github.com/actions/runner-images/issues/6775
-      - run: |
-          echo "$GITHUB_WORKSPACE"
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      # - run: |
+      #     echo "$GITHUB_WORKSPACE"
+      #     git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      # Download the previous failed-report for this branch
       - uses: dawidd6/action-download-artifact@v6
         with:
           workflow: test-basic-pwc-failed-only.yml
@@ -37,15 +38,18 @@ jobs:
           name: failure-report
           path: failures
           if_no_artifact_found: ignore
+      # capture whether we have failures. The rest of the steps will use a condition to skip if hasFailures isn't set.
       - id: download-failures
         continue-on-error: true
         run: |
-          head failures/summary.json && echo "hasFailures=true\n" >> $GITHUB_OUTPUT 
+          head failures/summary.json && echo "hasFailures=true\n" >> $GITHUB_OUTPUT
+
       - uses: actions/setup-node@v4
         if: ${{ success() && steps.download-failures.outputs.hasFailures == 'true' }}
         with:
           node-version: "18.x"
 
+      # Also install jq here, as we use it to parse our failures out of our summary file
       - name: Install dependencies
         if: ${{ success() && steps.download-failures.outputs.hasFailures == 'true' }}
         run: |
@@ -67,13 +71,14 @@ jobs:
         run: |
           npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }} --reporter blob $(cat ../failures/summary.json | jq -r '.failed[]' | tr '\n' ' ')
 
-      - name: Upload reports as artifacts.
+      - name: Upload blob reports as artifacts.
         uses: actions/upload-artifact@v4
         if: ${{ failure() && steps.download-failures.outputs.hasFailures == 'true' }}
         with:
           name: blobReports-${{ matrix.shard }}
           path: blob-report
           retention-days: 1
+  # Only run fullRun if the previous job passed
   fullRun:
     if: 'success()'
     needs: previousFailedFirst
@@ -90,10 +95,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      # https://github.com/actions/runner-images/issues/6775
-      - run: |
-          echo "$GITHUB_WORKSPACE"
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      # # https://github.com/actions/runner-images/issues/6775
+      # - run: |
+      #     echo "$GITHUB_WORKSPACE"
+      #     git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: "18.x"
@@ -103,6 +108,7 @@ jobs:
           npm ci
           npx playwright install chrome
           npx playwright install
+
       - name: Run All Test
         continue-on-error: false
         working-directory: ./basic
@@ -114,13 +120,14 @@ jobs:
         run: |
           npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }} --reporter blob
 
-      - name: Upload reports as artifacts.
+      - name: Upload blob reports as artifacts.
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: blobReports-${{ matrix.shard }}
           path: blob-report
           retention-days: 1
+  # Record a summary of errors on job failure
   recordFailedTests:
     if: 'failure()'
     needs: [previousFailedFirst, fullRun]
