@@ -4,6 +4,10 @@
 ## previousFailedFirst - downloads previous failures for the branch, if there are any, it runs those failures using a matrix
 ## fullRun - only runs if previousFailedFirst if there were no failed test, or all failed tests now pass
 ## recordFailedTests - merges and saves tests output from the previous jobs if one of them failed
+##
+## When running playwright, the `blob` reporter is being used to produce artifacts, this produces report output that can be merged later.
+## In the recordFailedTests job, `playwright merge-reports` is used to bring all the reports together (so we have all the failures),
+## and produces a summary.json file using an additional community reporter that includes a failure array that we can pass back into the test later.
 
 name: demo.playwright.pwc-failed
 on:
@@ -55,6 +59,7 @@ jobs:
           npx playwright install chrome
           npx playwright install
 
+      # Run only the failed tests by passing them in to the command once we extract them from the summary.json
       - name: Run Failed Tests
         if: ${{ success() && steps.download-failures.outputs.hasFailures == 'true' }}
         continue-on-error: false
