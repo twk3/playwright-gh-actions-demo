@@ -1,3 +1,10 @@
+# Demonstrates a workflow that initially runs the previously failed tests
+## Consists of 3 jobs: previousFailedFirst, fullRun, recordFailedTests
+##
+## previousFailedFirst - downloads previous failures for the branch, if there are any, it runs those failures using a matrix
+## fullRun - only runs if previousFailedFirst if there were no failed test, or all failed tests now pass
+## recordFailedTests - merges and saves tests output from the previous jobs if one of them failed
+
 name: demo.playwright.pwc-failed
 on:
   workflow_dispatch:
@@ -10,7 +17,7 @@ jobs:
       matrix:
         # run 3 copies of the job in parallel
         shard: [1, 2, 3]
-    name: "Playwright Tests - pwc - failed"
+    name: "Playwright Tests - check failed"
     timeout-minutes: 60
     runs-on: ubuntu-22.04
     container: mcr.microsoft.com/playwright:latest
@@ -75,7 +82,7 @@ jobs:
       matrix:
         # run 3 copies of the job in parallel
         shard: [1, 2, 3]
-    name: "Playwright Tests - pwc - full"
+    name: "Playwright Tests - run basic tests"
     timeout-minutes: 60
     runs-on: ubuntu-22.04
     container: mcr.microsoft.com/playwright:latest
