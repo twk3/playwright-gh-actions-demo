@@ -40,7 +40,7 @@ jobs:
           node-version: "18.x"
 
       - name: Install dependencies
-        if: ${{ failure() && steps.download-failures.outputs.hasFailures == 'true' }}
+        if: ${{ success() && steps.download-failures.outputs.hasFailures == 'true' }}
         run: |
           npm ci
           apt update
