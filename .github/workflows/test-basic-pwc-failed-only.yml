@@ -68,8 +68,9 @@ jobs:
           CURRENTS_PROJECT_ID: kTvs8s
           CURRENTS_RECORD_KEY: ${{ secrets.STAGING_CURRENTS_RECORD_KEY }}
           CURRENTS_CI_BUILD_ID: failed-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
+          PWTEST_BLOB_DO_NOT_REMOVE: 1
         run: |
-          npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }} --reporter blob $(cat ../failures/summary.json | jq -r '.failed[]' | tr '\n' ' ')
+          npx pwc-p --reporter blob $(cat ../failures/summary.json | jq -r '.failed[]' | tr '\n' ' ')
 
       - name: Upload blob reports as artifacts.
         uses: actions/upload-artifact@v4
@@ -117,8 +118,9 @@ jobs:
           CURRENTS_PROJECT_ID: kTvs8s
           CURRENTS_RECORD_KEY: ${{ secrets.STAGING_CURRENTS_RECORD_KEY }}
           CURRENTS_CI_BUILD_ID: all-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
+          PWTEST_BLOB_DO_NOT_REMOVE: 1
         run: |
-          npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }} --reporter blob
+          npx pwc-p --reporter blob
 
       - name: Upload blob reports as artifacts.
         uses: actions/upload-artifact@v4
