@@ -33,7 +33,7 @@ jobs:
       - uses: dawidd6/action-download-artifact@v6
         with:
           workflow: test-basic-pwc-failed-only.yml
-          workflow_conclusion: failure
+          workflow_conclusion: completed
           branch: ${{github.head_ref}}
           name: failure-report
           path: failures
