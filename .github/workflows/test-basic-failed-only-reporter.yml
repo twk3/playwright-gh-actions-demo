@@ -1,6 +1,7 @@
 name: demo.playwright.failed-only-reporter
 
 on:
+  push:
   workflow_dispatch:
 
 jobs:

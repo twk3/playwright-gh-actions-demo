@@ -1,6 +1,7 @@
 name: demo.playwright.failed-only-or8n
 
 on:
+  push:
   workflow_dispatch:
 
 jobs:

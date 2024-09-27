@@ -1,6 +1,7 @@
 name: demo.playwright.failed-only-shards
 
 on:
+  push:
   workflow_dispatch:
 
 jobs:
