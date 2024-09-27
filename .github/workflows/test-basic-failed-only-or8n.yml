@@ -13,12 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/playwright:latest
     env:
-      CURRENTS_PROJECT_ID: bnsqNa
-      CURRENTS_RECORD_KEY: ${{ secrets.CURRENTS_RECORD_KEY }}
+      CURRENTS_API_URL: https://cy-staging.currents.dev
+      CURRENTS_REST_API_URL: https://api-staging.currents.dev
+      CURRENTS_PROJECT_ID: kTvs8s
+      CURRENTS_RECORD_KEY: ${{ secrets.STAGING_CURRENTS_RECORD_KEY }}
+      CURRENTS_API_KEY: ${{ secrets.STAGING_CURRENTS_API_KEY }}
       CURRENTS_CI_BUILD_ID: or8n-${GITHUB_REPOSITORY}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}
-      CURRENTS_API_URL: ${{ secrets.CURRENTS_API_URL }}
-      CURRENTS_API_KEY: ${{ secrets.CURRENTS_API_KEY }}
-      CURRENTS_REST_API_URL: ${{ secrets.CURRENTS_REST_API_URL }}
     steps:
       - uses: actions/checkout@v4
         with:
