@@ -41,7 +41,7 @@ jobs:
 
       - name: Playwright Last Failed action
         id: last-failed-action
-        uses: currents-dev/playwright-last-failed@v1.0.8
+        uses: currents-dev/playwright-last-failed@v1
         with:
           debug: true
           pw-output-dir: basic/test-results
