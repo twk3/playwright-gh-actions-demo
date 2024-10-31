@@ -13,9 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/playwright:latest
     env:
-      CURRENTS_API_URL: https://cy-staging.currents.dev
-      CURRENTS_PROJECT_ID: vP155w
-      CURRENTS_RECORD_KEY: ${{ secrets.STAGING_CURRENTS_RECORD_KEY }}
+      CURRENTS_PROJECT_ID: HVsU7y
+      CURRENTS_RECORD_KEY: ${{ secrets.PRODUCTION_CURRENTS_RECORD_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
