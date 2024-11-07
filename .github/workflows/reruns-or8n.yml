@@ -35,13 +35,18 @@ jobs:
           npm ci
           npx playwright install chrome
 
+      - name: Previous Run Details
+        id: previous_run
+        run: |
+          PREVIOUS_RUN_ATTEMPT=$(( ${{ github.run_attempt }} - 1 ))
+          echo "previous_run_attempt=${PREVIOUS_RUN_ATTEMPT}" >> ${GITHUB_OUTPUT}
       - name: Playwright Last Failed action
         id: last-failed-action
         uses: currents-dev/playwright-last-failed@v1
         with:
           or8n: true
           # debug: true
-          previous-ci-build-id: playwright-run-${{ github.run_id }}-attempt-${{ github.run_attempt - 1 }}
+          previous-ci-build-id: playwright-run-${{ github.run_id }}-attempt-${{ steps.previous_run.outputs.previous_run_attempt }}
           pw-output-dir: basic/test-results
 
       - name: Playwright Tests
