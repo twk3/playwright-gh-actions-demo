@@ -5,6 +5,7 @@ import {
   fixtures
 } from '@currents/playwright';
 
-export const test = baseTest.extend<CurrentsFixtures, CurrentsWorkerFixtures>(
-  fixtures.defaultFixtures
-);
+export const test = baseTest.extend<CurrentsFixtures, CurrentsWorkerFixtures>({
+  ...fixtures.baseFixtures,
+  ...fixtures.rulesFixtures,
+});
