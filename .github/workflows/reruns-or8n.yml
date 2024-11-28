@@ -42,7 +42,7 @@ jobs:
           echo "previous_run_attempt=${PREVIOUS_RUN_ATTEMPT}" >> ${GITHUB_OUTPUT}
       - name: Playwright Last Failed action
         id: last-failed-action
-        uses: currents-dev/playwright-last-failed@v1
+        uses: currents-dev/playwright-last-failed@main
         with:
           or8n: true
           # debug: true
