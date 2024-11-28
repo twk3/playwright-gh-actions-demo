@@ -48,5 +48,4 @@ jobs:
         run: |
           COMMAND="npx pwc ${{ steps.last-failed-action.outputs.extra-pw-flags }}"
           echo "Running command: $COMMAND"
-          $COMMAND
 
