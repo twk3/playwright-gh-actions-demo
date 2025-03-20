@@ -16,7 +16,7 @@ jobs:
     name: "Playwright Tests - pwc"
     timeout-minutes: 60
     runs-on: ubuntu-22.04
-    container: mcr.microsoft.com/playwright:latest
+    container: mcr.microsoft.com/playwright:1.46.0-focal
 
     steps:
       - uses: actions/checkout@v3
@@ -43,7 +43,8 @@ jobs:
         continue-on-error: false
         working-directory: ./basic
         env:
-          CURRENTS_PROJECT_ID: bnsqNa
-          CURRENTS_RECORD_KEY: ${{ secrets.CURRENTS_RECORD_KEY }}
+          CURRENTS_API_URL: https://cy-staging.currents.dev
+          CURRENTS_PROJECT_ID: kTvs8s
+          CURRENTS_RECORD_KEY: ${{ secrets.STAGING_CURRENTS_RECORD_KEY }}
         run: |
           npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }}
