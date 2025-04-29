@@ -70,8 +70,8 @@ jobs:
         continue-on-error: false
         working-directory: ./basic
         env:
-          CURRENTS_PROJECT_ID: bnsqNa
-          CURRENTS_RECORD_KEY: ${{ secrets.CURRENTS_RECORD_KEY }}
+          CURRENTS_PROJECT_ID: OISIi8
+          CURRENTS_RECORD_KEY: ${{ secrets.PRODUCTION_CURRENTS_RECORD_KEY }}
           CURRENTS_CI_BUILD_ID: failed-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
           PWTEST_BLOB_DO_NOT_REMOVE: 1 # Only needed if using pwc-p
         run: |

@@ -40,8 +40,8 @@ jobs:
         continue-on-error: true
         working-directory: ./basic
         env:
-          CURRENTS_PROJECT_ID: bnsqNa
-          CURRENTS_RECORD_KEY: ${{ secrets.CURRENTS_RECORD_KEY }}
+          CURRENTS_PROJECT_ID: OISIi8
+          CURRENTS_RECORD_KEY: ${{ secrets.PRODUCTION_CURRENTS_RECORD_KEY }}
           CURRENTS_CI_BUILD_ID: reporter-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           npx playwright test --shard=${{ matrix.shard }}/${{ strategy.job-total }} --config ./playwright.config.reporter.ts --grep @basic
