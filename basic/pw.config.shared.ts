@@ -1,7 +1,10 @@
-import { devices, PlaywrightTestConfig } from "@playwright/test";
+import { CurrentsFixtures, CurrentsWorkerFixtures } from "@currents/playwright";
+import { defineConfig, devices } from "@playwright/test";
 
-const config: PlaywrightTestConfig = {
+const config = defineConfig<CurrentsFixtures, CurrentsWorkerFixtures>({
   timeout: 10 * 1000,
+
+  fullyParallel: true,
 
   expect: {
     timeout: 5000,
@@ -11,22 +14,25 @@ const config: PlaywrightTestConfig = {
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
 
-  webServer: {
-    command: "node ./server",
-    port: 4345,
-    cwd: __dirname,
-  },
-
   use: {
     actionTimeout: 0,
     trace: "on",
     video: "on",
     screenshot: "on",
+    // We can disable Currents fixtures if no project ID is provided
+    currentsFixturesEnabled: !!process.env.CURRENTS_PROJECT_ID,
   },
 
   projects: [
     {
-      name: "chromium",
+      name: "Project A",
+      retries: 2,
+      use: {
+        ...devices["Desktop Chrome"],
+      },
+    },
+    {
+      name: "Project B",
       retries: 2,
       use: {
         ...devices["Desktop Chrome"],
@@ -34,8 +40,16 @@ const config: PlaywrightTestConfig = {
     },
   ],
 
+  webServer: {
+    command: 'node ./server/index.js',
+    port: 4346,
+    reuseExistingServer: !process.env.CI,
+    stdout: 'ignore',
+    stderr: 'pipe',
+  },
+
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
   outputDir: "test-results/",
-};
+});
 
 export default config;

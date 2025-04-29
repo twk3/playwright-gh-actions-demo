@@ -1,4 +1,4 @@
-name: demo.playwright.reporter
+name: demo.playwright.pwc-p.argos
 on:
   workflow_dispatch:
   pull_request:
@@ -10,9 +10,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # run 3 copies of the current job in parallel
         shard: [1, 2, 3]
-    name: "Playwright Tests - Reporter"
+    name: "PW tests"
     timeout-minutes: 60
     runs-on: ubuntu-22.04
     container: mcr.microsoft.com/playwright:v1.49.0-jammy
@@ -29,19 +28,20 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "18.x"
+          node-version: "20.x"
 
       - name: Install dependencies
         run: |
           npm ci
           npx playwright install chrome
 
-      - name: Run Basic Tests
-        continue-on-error: false
-        working-directory: ./basic
+      - name: Run Argos
+        working-directory: ./argos
         env:
+          ARGOS_PARALLEL: 1
+          ARGOS_PARALLEL_TOTAL: -1
+          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
           CURRENTS_PROJECT_ID: bnsqNa
           CURRENTS_RECORD_KEY: ${{ secrets.CURRENTS_RECORD_KEY }}
-          CURRENTS_CI_BUILD_ID: reporter-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
-          npx playwright test --shard=${{ matrix.shard }}/${{ strategy.job-total }} --config ./playwright.config.reporter.ts
+          npx pwc-p

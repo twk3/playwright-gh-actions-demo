@@ -15,12 +15,27 @@ To reproduce the setup:
 - Create an organization, get your **Record Key** and **Project Id** at https://app.currents.dev
 - Set [GitHub secret variable](https://docs.github.com/en/actions/reference/encrypted-secrets) `CURRENTS_RECORD_KEY`.
 
-See the example GH Actions configuration:
+## Examples
 
-- [test-basic-pwc.yml](.github/workflows/test-basic-pwc.yml)
-- [test-basic-reporter.yml](.github/workflows/test-basic-reporter.yml)
+Examples of various variants of integrating Currents with Playwright on GitHub Actions:
 
-Additional resources:
+- [test-basic-pwc.yml](.github/workflows/test-basic-pwc.yml) - parallel run using 3 shards and `pwc` command. Basic example of running playwright tests in parallel using 3 containers of GitHub Actions Matrix and `pwc` command.
+
+- [test-basic-reporter.yml](.github/workflows/test-basic-reporter.yml) - parallel run using 3 shards and `playwright.config.ts`. Basic example of running playwright tests in parallel using 3 containers of GitHub Actions Matrix configuring Currents Reporter in `playwright.config.ts`.
+
+- [test-basic-reporter-with-summary.yml](.github/workflows/test-basic-reporter-with-summary.yml) - parallel run using 2 shards and `playwright.config.ts` prints summary at the end of a run for each shard.
+
+- [test-or8n.yml](.github/workflows/test-or8n.yml) - parallel Playwright Tests using [Currents Orchestration for Playwright](https://docs.currents.dev/guides/parallelization-guide/pw-parallelization/playwright-orchestration) - and GitHub Actions Matrix. Currents Orchestration speeds up CI runs by up to 40% (compared to native sharding) by optimally balancing tests between the available machines.
+
+- [argos-example.yml](.github/workflows/argos-example.yml) - parallel run using Argos CI and Currents orchestration.
+
+### Reruns only the failed tests
+
+- [rerun-shards-pwc.yml](.github/workflows/rerun-shards-pwc.yml) - rerun only the tests that failed in the previous run, using `pwc` helper command that is included in `@currents/playwright` package.
+- [rerun-shards-reporter.yml](.github/workflows/rerun-shards-reporter.yml) - rerun only the tests that failed in the previous run, using reporter explicitly configured in `playwright.config.ts`
+- [reruns-or8n.yml](.github/workflows/reruns-or8n.yml) - rerun only the tests that failed in the previous orchestrated run
+
+## Additional resources
 
 - Playwright Features on Currents: https://currents.dev/playwright
 - Integration Documentation: https://currents.dev/readme/integration-with-playwright/currents-playwright
