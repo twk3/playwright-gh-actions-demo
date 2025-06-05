@@ -1,7 +1,7 @@
-import { CurrentsFixtures, CurrentsWorkerFixtures } from "@currents/playwright";
+import { CurrentsFixtures, CurrentsProjectOptions, CurrentsWorkerFixtures } from "@currents/playwright";
 import { defineConfig, devices } from "@playwright/test";
 
-const config = defineConfig<CurrentsFixtures, CurrentsWorkerFixtures>({
+const config = defineConfig<CurrentsFixtures & CurrentsProjectOptions, CurrentsWorkerFixtures>({
   timeout: 10 * 1000,
 
   fullyParallel: true,
@@ -12,13 +12,14 @@ const config = defineConfig<CurrentsFixtures, CurrentsWorkerFixtures>({
 
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 2 : undefined,
+  workers: process.env.CI ? 1 : undefined,
 
   use: {
     actionTimeout: 0,
     trace: "on",
     video: "on",
     screenshot: "on",
+    batchSize: 3,
     // We can disable Currents fixtures if no project ID is provided
     currentsFixturesEnabled: !!process.env.CURRENTS_PROJECT_ID,
   },
