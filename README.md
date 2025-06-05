@@ -1,5 +1,7 @@
 # 🎭 Currents - Playwright - GitHub Actions
 
+Jun 5
+
 This repository showcases running [Playwright](https://playwright.dev/) tests on GitHub Actions in parallel, while using [Currents](https://currents.dev) as the reporting dashboard.
 
 <p align="center">
