@@ -30,6 +30,7 @@ const config = defineConfig<CurrentsFixtures & CurrentsProjectOptions, CurrentsW
       retries: 2,
       use: {
         ...devices["Desktop Chrome"],
+        batchSize: 3,
       },
     },
     {
@@ -37,6 +38,7 @@ const config = defineConfig<CurrentsFixtures & CurrentsProjectOptions, CurrentsW
       retries: 2,
       use: {
         ...devices["Desktop Chrome"],
+        batchSize: 3,
       },
     },
   ],
