@@ -12,7 +12,7 @@ const config = defineConfig<CurrentsFixtures, CurrentsWorkerFixtures>({
 
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 3 : undefined,
+  workers: process.env.CI ? 2 : undefined,
 
   use: {
     actionTimeout: 0,
