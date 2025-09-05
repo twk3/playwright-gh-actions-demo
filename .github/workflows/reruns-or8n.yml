@@ -37,7 +37,7 @@ jobs:
 
       - name: Playwright Last Failed action
         id: last-failed-action
-        uses: currents-dev/playwright-last-failed@v1
+        uses: currents-dev/playwright-last-failed@fix/apiMode-no-fail
         with:
           or8n: true
           # debug: true
