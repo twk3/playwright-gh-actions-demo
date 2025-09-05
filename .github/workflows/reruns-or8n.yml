@@ -11,7 +11,7 @@ jobs:
         shard: [1, 2, 3]
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/playwright:v1.49.0-noble
+    container: mcr.microsoft.com/playwright:v1.55.0-noble
     env:
       CURRENTS_PROJECT_ID: OISIi8
       CURRENTS_RECORD_KEY: ${{ secrets.PRODUCTION_CURRENTS_RECORD_KEY }}
@@ -41,7 +41,7 @@ jobs:
         with:
           or8n: true
           # debug: true
-          # previous-ci-build-id: default is ${{ github.repository }}-${{ github.run_id }}-<%= ${{ github.run_attempt }} - 1 %>
+          previous-ci-build-id: ${{ github.repository }}-${{ github.run_id }}-<%= ${{ github.run_attempt }} - 1 %>-not-found
           pw-output-dir: basic/test-results
 
       - name: Playwright Tests
