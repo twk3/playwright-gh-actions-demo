@@ -11,7 +11,7 @@ jobs:
         shard: [1, 2, 3]
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/playwright:v1.49.0-noble
+    container: mcr.microsoft.com/playwright:v1.57.0-jammy
     env:
       CURRENTS_API_URL: https://cy-staging.currents.dev
       CURRENTS_PROJECT_ID: kTvs8s
