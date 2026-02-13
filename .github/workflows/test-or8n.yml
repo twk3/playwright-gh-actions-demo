@@ -16,7 +16,7 @@ jobs:
     name: "Playwright Tests - pwc-p"
     timeout-minutes: 60
     runs-on: ubuntu-22.04
-    container: mcr.microsoft.com/playwright:v1.49.0-jammy
+    container: mcr.microsoft.com/playwright:v1.57.0-jammy
 
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "18.x"
+          node-version: "20.x"
 
       - name: Install dependencies
         run: |
@@ -42,8 +42,9 @@ jobs:
         working-directory: ./basic
         env:
           ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
-          CURRENTS_PROJECT_ID: bnsqNa
-          CURRENTS_RECORD_KEY: ${{ secrets.CURRENTS_RECORD_KEY }}
+          CURRENTS_API_URL: https://cy-staging.currents.dev
+          CURRENTS_PROJECT_ID: kTvs8s
+          CURRENTS_RECORD_KEY: ${{ secrets.STAGING_CURRENTS_RECORD_KEY }}
           CURRENTS_CI_BUILD_ID: reporter-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
           COMMIT_INFO_MESSAGE: "pwc-p: ${{ github.event.head_commit.message }}"
           PWTEST_BLOB_DO_NOT_REMOVE: 1 # Add the env variable to not remove test blobs
