@@ -11,7 +11,7 @@ test.describe("homepage", () => {
 
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze(); // 4
 
-    expect(accessibilityScanResults.violations).toEqual([]); // 5
+    expect(accessibilityScanResults.violations).toEqual([]); // 5  or something like that
   });
 });
 
