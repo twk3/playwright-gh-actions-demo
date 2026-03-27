@@ -1,7 +1,7 @@
-import { CurrentsFixtures, CurrentsWorkerFixtures } from "@currents/playwright";
+import { CurrentsFixtures, CurrentsProjectOptions, CurrentsWorkerFixtures } from "@currents/playwright";
 import { defineConfig, devices } from "@playwright/test";
 
-const config = defineConfig<CurrentsFixtures, CurrentsWorkerFixtures>({
+const config = defineConfig<CurrentsFixtures & CurrentsProjectOptions, CurrentsWorkerFixtures>({
   timeout: 10 * 1000,
 
   fullyParallel: true,
@@ -19,6 +19,7 @@ const config = defineConfig<CurrentsFixtures, CurrentsWorkerFixtures>({
     trace: "on",
     video: "on",
     screenshot: "on",
+    batchSize: 3,
     // We can disable Currents fixtures if no project ID is provided
     currentsFixturesEnabled: !!process.env.CURRENTS_PROJECT_ID,
   },

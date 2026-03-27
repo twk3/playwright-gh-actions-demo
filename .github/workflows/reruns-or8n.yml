@@ -11,12 +11,13 @@ jobs:
         shard: [1, 2, 3]
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/playwright:v1.49.0-noble
+    container: mcr.microsoft.com/playwright:v1.55.0-noble
     env:
-      CURRENTS_PROJECT_ID: bnsqNa
-      CURRENTS_RECORD_KEY: ${{ secrets.CURRENTS_RECORD_KEY }}
+      CURRENTS_API_URL: ${{ secrets.LOCAL_CURRENTS_API_URL }}
+      CURRENTS_PROJECT_ID: ObPICX
+      CURRENTS_RECORD_KEY: ${{ secrets.LOCAL_CURRENTS_RECORD_KEY }}
       CURRENTS_CI_BUILD_ID: ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
-      CURRENTS_API_KEY: ${{ secrets.CURRENTS_API_KEY }}
+      CURRENTS_API_KEY: ${{ secrets.PRODUCTION_CURRENTS_API_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -41,7 +42,7 @@ jobs:
         with:
           or8n: true
           # debug: true
-          # previous-ci-build-id: default is ${{ github.repository }}-${{ github.run_id }}-<%= ${{ github.run_attempt }} - 1 %>
+          # previous-ci-build-id: ${{ github.repository }}-${{ github.run_id }}-<%= ${{ github.run_attempt }} - 1 %>
           pw-output-dir: basic/test-results
 
       - name: Playwright Tests
