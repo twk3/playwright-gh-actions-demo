@@ -38,7 +38,7 @@ jobs:
 
       - name: Playwright Last Failed action
         id: last-failed-action
-        uses: currents-dev/playwright-last-failed@feat/add-discovery-output
+        uses: currents-dev/playwright-last-failed@v2
         with:
           or8n: true
           # debug: true

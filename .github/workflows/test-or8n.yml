@@ -53,5 +53,6 @@ jobs:
 
       # Generate a report based on the blob with the merge-report command
       - name: Generate HTML report from blob
+        if: always() && !cancelled()
         run: |
           npx playwright merge-reports --reporter=html ./blob-report
