@@ -39,9 +39,7 @@ jobs:
       - name: Playwright Tests
         working-directory: ./basic
         run: |
-          DISCOVERY_COMMAND="npx pwc-p discover --project \"Project A\" --grep @basic"
-          echo "Running discovery: $DISCOVERY_COMMAND"
-          $DISCOVERY_COMMAND
-          COMMAND="npx pwc-p run --project \"Project A\""
-          echo "Running command: $COMMAND"
-          $COMMAND
+          echo "Running discovery"
+          npx pwc-p discover --project "Project A" --grep @basic
+          echo "Running tests"
+          npx pwc-p run --project "Project A"
