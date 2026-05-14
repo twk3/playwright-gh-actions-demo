@@ -1,10 +1,10 @@
-name: failed-only-or8n
+name: discovery-or8n
 
 on:
   push:
 
 jobs:
-  test-or8n-discovery:
+  test-or8n:
     strategy:
       fail-fast: false
       matrix:
@@ -39,9 +39,9 @@ jobs:
       - name: Playwright Tests
         working-directory: ./basic
         run: |
-          DISCOVERY_COMMAND="npx pwc-p discover --grep @basic"
+          DISCOVERY_COMMAND="npx pwc-p discover --project 'Project A' --grep @basic"
           echo "Running discovery: $DISCOVERY_COMMAND"
           $DISCOVERY_COMMAND
-          COMMAND="npx pwc-p run"
+          COMMAND="npx pwc-p run --project 'Project A'"
           echo "Running command: $COMMAND"
           $COMMAND

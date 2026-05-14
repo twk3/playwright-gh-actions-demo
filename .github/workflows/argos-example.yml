@@ -44,4 +44,4 @@ jobs:
           CURRENTS_PROJECT_ID: OISIi8
           CURRENTS_RECORD_KEY: ${{ secrets.PRODUCTION_CURRENTS_RECORD_KEY }}
         run: |
-          npx pwc-p
+          npx pwc-p run
