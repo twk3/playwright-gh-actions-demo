@@ -1,0 +1,47 @@
+name: failed-only-or8n
+
+on:
+  push:
+
+jobs:
+  test-or8n-discovery:
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.60.0-noble
+    env:
+      CURRENTS_PROJECT_ID: OISIi8
+      CURRENTS_RECORD_KEY: ${{ secrets.PRODUCTION_CURRENTS_RECORD_KEY }}
+      CURRENTS_CI_BUILD_ID: ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
+      CURRENTS_API_KEY: ${{ secrets.PRODUCTION_CURRENTS_API_KEY }}
+      CURRENTS_DISCOVERY_OUTPUT_FILE: .currents/discovery.txt
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      # https://github.com/actions/runner-images/issues/6775
+      - run: |
+          echo "$GITHUB_WORKSPACE"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.x"
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install chrome
+
+      - name: Playwright Tests
+        working-directory: ./basic
+        run: |
+          DISCOVERY_COMMAND="npx pwc-p discover --grep @basic"
+          echo "Running discovery: $DISCOVERY_COMMAND"
+          $DISCOVERY_COMMAND
+          COMMAND="npx pwc-p run"
+          echo "Running command: $COMMAND"
+          $COMMAND
