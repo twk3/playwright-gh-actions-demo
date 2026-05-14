@@ -48,7 +48,6 @@ jobs:
       - name: Playwright Tests
         working-directory: ./basic
         run: |
-          cp ../orchestration/currents.config.ts .
           DISCOVERY_COMMAND="npx pwc-p discover ${{ steps.last-failed-action.outputs.extra-pw-flags }}"
           echo "Running discovery: $DISCOVERY_COMMAND"
           $DISCOVERY_COMMAND
