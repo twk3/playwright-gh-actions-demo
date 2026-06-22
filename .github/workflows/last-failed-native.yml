@@ -61,7 +61,7 @@ jobs:
       # The exact key (this attempt) won't exist yet, so the restore-keys prefix
       # falls back to the most recent attempt for the same run + shard.
       - name: Restore last-run file
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: .last-run.json
           key: last-run-${{ github.run_id }}-${{ matrix.shard }}-${{ github.run_attempt }}
@@ -87,7 +87,7 @@ jobs:
       # Always save (even on failure) so the next attempt can re-run the failures.
       - name: Save last-run file
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .last-run.json
           key: last-run-${{ github.run_id }}-${{ matrix.shard }}-${{ github.run_attempt }}
