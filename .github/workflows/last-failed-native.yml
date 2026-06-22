@@ -1,0 +1,93 @@
+# Re-run only failed Playwright tests in CI using the BUILT-IN flags
+# (--last-failed / --last-failed-file), with no Currents dependency.
+#
+# Mirrors the article:
+# https://currents.dev/posts/playwright-re-run-only-failed-tests
+#
+# How to verify the article's example:
+#   1. Trigger this workflow (Actions tab -> "Run workflow"). On attempt 1 the
+#      "environmental dependency is available" test fails in whichever shard it
+#      lands in, and each shard's .last-run.json is cached.
+#   2. Use "Re-run failed jobs". GitHub only re-executes the shard(s) that
+#      failed, and bumps github.run_attempt to 2:
+#        - the cached .last-run.json is restored,
+#        - --last-failed is added, so ONLY the previously-failed test runs,
+#        - and it now passes (RUN_ATTEMPT > 1), so the suite goes green.
+#   Note: if you instead "Re-run all jobs", a shard whose previous run PASSED
+#   re-runs its full set of tests -- with no recorded failures, --last-failed
+#   has nothing to narrow down and Playwright runs the whole shard.
+name: last-failed (native, no Currents)
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+
+jobs:
+  test-shards:
+    strategy:
+      fail-fast: false
+      matrix:
+        # run 3 copies of the job in parallel
+        shard: [1, 2, 3]
+
+    name: "Last Failed - shard ${{ matrix.shard }}"
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    # --last-failed-file requires Playwright >= 1.61
+    container: mcr.microsoft.com/playwright:v1.61.0-noble
+
+    env:
+      # Surfaced to the test suite to simulate an environmental issue that is
+      # "fixed" on re-run (run_attempt increments on "Re-run failed jobs").
+      RUN_ATTEMPT: ${{ github.run_attempt }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      # https://github.com/actions/runner-images/issues/6775
+      - run: |
+          echo "$GITHUB_WORKSPACE"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24.x"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Restore this shard's .last-run.json from a previous attempt (if any).
+      # The exact key (this attempt) won't exist yet, so the restore-keys prefix
+      # falls back to the most recent attempt for the same run + shard.
+      - name: Restore last-run file
+        uses: actions/cache/restore@v5
+        with:
+          path: .last-run.json
+          key: last-run-${{ github.run_id }}-${{ matrix.shard }}-${{ github.run_attempt }}
+          restore-keys: |
+            last-run-${{ github.run_id }}-${{ matrix.shard }}-
+
+      - name: Run Playwright tests
+        run: |
+          EXTRA_FLAGS=""
+          # Only add --last-failed when a previous run left a file behind,
+          # i.e. this is a retry. The first run executes the full shard.
+          if [ -f .last-run.json ]; then
+            EXTRA_FLAGS="--last-failed --last-failed-file .last-run.json"
+          fi
+          # --last-failed-file is always passed so Playwright writes the result
+          # of THIS run to a known location for the cache/save step below.
+          npx playwright test \
+            --config last-failed/playwright.config.ts \
+            --shard=${{ matrix.shard }}/${{ strategy.job-total }} \
+            $EXTRA_FLAGS \
+            --last-failed-file .last-run.json
+
+      # Always save (even on failure) so the next attempt can re-run the failures.
+      - name: Save last-run file
+        if: always()
+        uses: actions/cache/save@v5
+        with:
+          path: .last-run.json
+          key: last-run-${{ github.run_id }}-${{ matrix.shard }}-${{ github.run_attempt }}

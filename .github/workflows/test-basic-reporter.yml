@@ -14,11 +14,11 @@ jobs:
         shard: [1, 2, 3]
     name: "Playwright Tests - Reporter"
     timeout-minutes: 60
-    runs-on: ubuntu-22.04
-    container: mcr.microsoft.com/playwright:v1.49.0-jammy
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.60.0-noble
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -27,9 +27,9 @@ jobs:
           echo "$GITHUB_WORKSPACE"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: "18.x"
+          node-version: "24.x"
 
       - name: Install dependencies
         run: |
@@ -40,8 +40,8 @@ jobs:
         continue-on-error: false
         working-directory: ./basic
         env:
-          CURRENTS_PROJECT_ID: bnsqNa
-          CURRENTS_RECORD_KEY: ${{ secrets.CURRENTS_RECORD_KEY }}
+          CURRENTS_PROJECT_ID: OISIi8
+          CURRENTS_RECORD_KEY: ${{ secrets.PRODUCTION_CURRENTS_RECORD_KEY }}
           CURRENTS_CI_BUILD_ID: reporter-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           npx playwright test --shard=${{ matrix.shard }}/${{ strategy.job-total }} --config ./playwright.config.reporter.ts

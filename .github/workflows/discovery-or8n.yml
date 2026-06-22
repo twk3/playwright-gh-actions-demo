@@ -1,33 +1,32 @@
-name: demo.playwright.pwc
+name: discovery-or8n
+
 on:
-  workflow_dispatch:
-  pull_request:
-    branches: [main]
   push:
-    branches: [main]
+
 jobs:
-  basicTests:
+  test-or8n:
     strategy:
       fail-fast: false
       matrix:
-        # run 3 copies of the job in parallel
         shard: [1, 2, 3]
-
-    name: "Playwright Tests - pwc"
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/playwright:v1.60.0-noble
-
+    env:
+      CURRENTS_PROJECT_ID: OISIi8
+      CURRENTS_RECORD_KEY: ${{ secrets.PRODUCTION_CURRENTS_RECORD_KEY }}
+      CURRENTS_CI_BUILD_ID: ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }}
+      CURRENTS_API_KEY: ${{ secrets.PRODUCTION_CURRENTS_API_KEY }}
+      CURRENTS_DISCOVERY_FILE: .currents/discovery.txt
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.ref }}
 
       # https://github.com/actions/runner-images/issues/6775
       - run: |
           echo "$GITHUB_WORKSPACE"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
       - uses: actions/setup-node@v6
         with:
           node-version: "24.x"
@@ -38,10 +37,9 @@ jobs:
           npx playwright install chrome
 
       - name: Playwright Tests
-        continue-on-error: false
         working-directory: ./basic
-        env:
-          CURRENTS_PROJECT_ID: OISIi8
-          CURRENTS_RECORD_KEY: ${{ secrets.PRODUCTION_CURRENTS_RECORD_KEY }}
         run: |
-          npx pwc --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+          echo "Running discovery"
+          npx pwc-p discover --project "Project A" --grep @basic
+          echo "Running tests"
+          npx pwc-p run --project "Project A"
