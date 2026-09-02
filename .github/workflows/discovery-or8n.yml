@@ -1,4 +1,4 @@
-name: failed-only-or8n
+name: discovery-or8n
 
 on:
   push:
@@ -37,21 +37,10 @@ jobs:
           npm ci
           npx playwright install chrome
 
-      - name: Playwright Last Failed action
-        id: last-failed-action
-        uses: currents-dev/playwright-last-failed@v2
-        with:
-          or8n: true
-          # debug: true
-          # previous-ci-build-id: ${{ github.repository }}-${{ github.run_id }}-<%= ${{ github.run_attempt }} - 1 %>
-          pw-output-dir: basic/test-results
-
       - name: Playwright Tests
         working-directory: ./basic
         run: |
-          DISCOVERY_COMMAND="npx pwc-p discover ${{ steps.last-failed-action.outputs.extra-discovery-flags }}"
-          echo "Running discovery: $DISCOVERY_COMMAND"
-          $DISCOVERY_COMMAND
-          COMMAND="npx pwc-p run"
-          echo "Running command: $COMMAND"
-          $COMMAND
+          echo "Running discovery"
+          npx pwc-p discover --project "Project A" --grep @basic
+          echo "Running tests"
+          npx pwc-p run --project "Project A"
